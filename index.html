@@ -3,101 +3,175 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secuenciador Profesional Hash-256</title>
+    <title>Crypto-Hash Lab v13</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #f1f5f9; font-family: 'Inter', sans-serif; }
-        .lab-panel { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 4px; }
+        body { background-color: #f8fafc; font-family: 'Inter', sans-serif; }
+        
+        /* Paneles */
+        .lab-panel { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
+        
+        /* Gel de Simulación */
         .gel-simulation { 
-            background: #e2e8f0; 
+            background: linear-gradient(180deg, #f1f5f9 0%, #e2e8f0 100%); 
             border: 2px solid #cbd5e1; 
             position: relative; 
-            min-height: 280px;
-            box-shadow: inset 0 2px 10px rgba(0,0,0,0.05);
+            min-height: 400px; 
+            box-shadow: inset 0 2px 15px rgba(0,0,0,0.05);
+            border-radius: 4px;
         }
+
+        /* Bandas de ADN */
         .dna-band { 
-            background: #0f172a; 
-            border-bottom: 1px solid rgba(255,255,255,0.2);
-            box-shadow: 0 1px 2px rgba(0,0,0,0.3);
-            transition: all 0.1s ease;
+            border-bottom: 1px solid rgba(255,255,255,0.3); 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 1px;
         }
-        .dna-band.playing { 
-            background: #2563eb; 
-            transform: scaleX(1.8); 
-            box-shadow: 0 0 12px #3b82f6; 
-            z-index: 10;
+        
+        /* Estilos de Carril */
+        .band-a { background: #2563eb; } /* Azul Real */
+        .band-b { background: #059669; } /* Esmeralda */
+
+        /* Efectos de Reproducción */
+        .band-a.playing { 
+            background: #60a5fa; transform: scaleX(2.5) scaleY(1.2); 
+            box-shadow: 0 0 20px rgba(96, 165, 250, 0.8); z-index: 50; 
         }
+        .band-b.playing { 
+            background: #34d399; transform: scaleX(2.5) scaleY(1.2); 
+            box-shadow: 0 0 20px rgba(52, 211, 153, 0.8); z-index: 50; 
+        }
+
+        /* Tipografía Técnica */
         .mono { font-family: 'JetBrains Mono', 'Fira Code', monospace; }
-        .ui-label { font-size: 0.7rem; font-weight: 800; color: #475569; letter-spacing: 0.1em; }
+        .ui-label { font-size: 0.65rem; font-weight: 800; color: #64748b; letter-spacing: 0.1em; text-transform: uppercase; }
+
+        /* Elementos UI */
+        .lane-divider { border-top: 2px dashed #94a3b8; width: 100%; position: absolute; top: 50%; z-index: 5; opacity: 0.5; }
         #playhead { 
-            position: absolute; 
-            top: 0; 
-            width: 3px; 
-            height: 100%; 
-            background: #ef4444; 
-            display: none; 
-            pointer-events: none; 
-            z-index: 50; 
-            box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
+            position: absolute; top: 0; width: 2px; height: 100%; 
+            background: #ef4444; display: none; z-index: 40; 
+            box-shadow: 0 0 10px #ef4444;
         }
+        .btn-sync { 
+            background: linear-gradient(135deg, #1e3a8a 0%, #064e3b 100%); 
+            transition: transform 0.1s;
+        }
+        .btn-sync:active { transform: scale(0.98); }
     </style>
 </head>
-<body class="p-2 sm:p-6 md:p-10 min-h-screen flex items-center justify-center">
+<body class="p-2 md:p-8 min-h-screen flex items-center justify-center bg-slate-100">
 
-    <div class="w-full max-w-5xl flex flex-col gap-4">
+    <div class="w-full max-w-7xl flex flex-col gap-5">
         
-        <header class="lab-panel p-5 flex flex-col md:flex-row justify-between items-center gap-4 shadow-md">
-            <div class="text-center md:text-left">
-                <h1 class="text-xl font-black text-slate-900 tracking-tighter uppercase italic">
-                    Secuenciador <span class="text-blue-600">Audio-Hash</span>
-                </h1>
-                <p class="ui-label uppercase">Análisis Profesional de Datos</p>
+        <header class="lab-panel p-5 flex flex-col md:flex-row justify-between items-center gap-4 border-t-4 border-t-slate-900 bg-white">
+            <div class="flex items-center gap-4">
+                <div class="h-10 w-10 bg-slate-900 rounded flex items-center justify-center text-white font-bold mono">IO</div>
+                <div>
+                    <h1 class="text-2xl font-black text-slate-900 tracking-tighter italic leading-none">
+                        CRYPTO-HASH <span class="text-blue-600">LAB</span>
+                    </h1>
+                    <p class="ui-label mt-1">Secuenciador Criptográfico de Hash-256</p>
+                </div>
             </div>
-            <div class="flex flex-wrap justify-center gap-2">
-                <button id="btnListen" class="bg-blue-600 text-white text-[10px] font-bold px-4 py-2 hover:bg-blue-700 uppercase rounded">Oír</button>
-                <button id="btnDownloadAudio" class="bg-emerald-600 text-white text-[10px] font-bold px-4 py-2 hover:bg-emerald-700 uppercase rounded">Audio</button>
-                <button id="btnDownload" class="bg-slate-900 text-white text-[10px] font-bold px-4 py-2 hover:bg-slate-800 uppercase rounded text-xs">PNG</button>
+            
+            <div class="flex flex-wrap justify-center gap-3">
+                <button onclick="playDualSync()" class="btn-sync text-white text-[10px] font-bold px-6 py-3 rounded shadow-lg flex items-center gap-2 hover:opacity-90 ring-1 ring-slate-900">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4l12 6-12 6z"/></svg>
+                    REPRODUCCIÓN DUAL (SYNC)
+                </button>
+                <button id="btnDownload" class="bg-slate-800 text-white text-[10px] font-bold px-5 py-3 rounded hover:bg-slate-700 flex items-center gap-2 shadow-md">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                    REPORTE PNG
+                </button>
             </div>
         </header>
 
-        <section class="lab-panel p-4 md:p-8 shadow-lg">
-            <div class="flex justify-between items-center mb-4">
-                <div class="flex flex-col">
-                    <span class="ui-label">Cromatografía de Picos</span>
-                    <span id="fileNameDisplay" class="text-[10px] text-blue-600 font-mono mt-1 uppercase">FUENTE: SISTEMA_INIT</span>
+        <section class="lab-panel p-1 shadow-xl overflow-hidden">
+            <div class="bg-slate-50 p-3 border-b border-slate-100 flex justify-between items-center">
+                <div id="similarity" class="mono font-bold text-xs text-slate-400">ESPERANDO DATOS...</div>
+                <div id="recordStatus" class="text-[10px] text-red-600 font-bold hidden animate-pulse flex items-center gap-2">
+                    <span class="h-2 w-2 bg-red-600 rounded-full"></span> GRABANDO MASTER AUDIO...
                 </div>
-                <span id="recordStatus" class="text-[10px] text-red-600 font-bold hidden animate-pulse">● GRABANDO...</span>
             </div>
-            <canvas id="peakCanvas" class="w-full h-16 md:h-24 mb-6 border-b border-slate-200"></canvas>
+
+            <div class="relative h-24 w-full bg-white border-b border-slate-200">
+                <canvas id="peakCanvas" class="w-full h-full"></canvas>
+                <span class="absolute top-1 left-2 ui-label text-slate-300">ESPECTROGRAMA</span>
+            </div>
             
-            <div class="flex justify-between mb-2">
-                <span class="ui-label">Secuencia de Electroforesis (BARRAS)</span>
-            </div>
-            <div id="visualizer" class="gel-simulation w-full flex items-start justify-between px-4 md:px-12 py-6 overflow-hidden rounded">
-                <div id="playhead"></div>
-            </div>
-            <div class="flex justify-between mt-3 px-4 md:px-12">
-                <span class="ui-label">INICIO (0x0)</span>
-                <span class="ui-label">FIN (0xF)</span>
+            <div class="p-4 md:p-6 bg-slate-50">
+                <div class="flex justify-between mb-1 px-2">
+                    <span class="ui-label text-blue-600">CARRIL A (PRIMARIO)</span>
+                    <span class="ui-label text-emerald-600">CARRIL B (SECUNDARIO)</span>
+                </div>
+                <div id="visualizer" class="gel-simulation w-full overflow-hidden rounded">
+                    <div id="playhead"></div>
+                    <div class="lane-divider"></div>
+                </div>
+                <div class="flex justify-between mt-2 px-2">
+                    <span class="ui-label">0x00 (INICIO)</span>
+                    <span class="ui-label">0xFF (FIN)</span>
+                </div>
             </div>
         </section>
 
-        <footer class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="lab-panel p-5 space-y-4">
-                <div>
-                    <label class="ui-label block mb-2 uppercase text-blue-600">Entrada de Semilla / Texto</label>
-                    <input type="text" id="textInput" class="w-full border-2 border-slate-200 p-3 text-sm mono focus:border-blue-500 outline-none rounded" placeholder="Escribe aquí para generar secuencia...">
+        <footer class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            
+            <div class="lab-panel border-l-4 border-l-blue-600 p-5 flex flex-col gap-4">
+                <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+                    <div class="flex flex-col">
+                        <span class="ui-label text-blue-600">FUENTE A</span>
+                        <span id="nameA" class="mono text-xs text-slate-800 font-bold truncate w-32 md:w-48">---</span>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="playSequence('A')" class="bg-blue-50 text-blue-700 hover:bg-blue-100 text-[10px] px-3 py-1 font-bold rounded border border-blue-200">PLAY A</button>
+                        <button onclick="exportAudio('A')" class="bg-blue-600 text-white hover:bg-blue-700 text-[10px] px-3 py-1 font-bold rounded shadow">EXP. AUDIO</button>
+                        <button onclick="exportLaneImage('A')" class="bg-slate-700 text-white hover:bg-slate-800 text-[10px] px-3 py-1 font-bold rounded shadow border border-slate-600" title="Exportar Ficha A">EXP. IMG</button>
+                    </div>
                 </div>
-                <div id="drop-zone" class="border-2 border-dashed border-slate-300 p-4 text-center cursor-pointer hover:bg-slate-50 rounded bg-slate-50/50">
-                    <input type="file" id="fileInput" class="hidden">
-                    <p class="ui-label" id="dropLabel">ARRASTRA O CARGA UN ARCHIVO</p>
+                
+                <div class="space-y-3">
+                    <input type="text" id="textA" class="w-full border-2 border-slate-200 p-2 text-sm mono outline-none focus:border-blue-500 rounded bg-slate-50 focus:bg-white transition-all" placeholder="Escribir datos A...">
+                    
+                    <div id="dropA" onclick="document.getElementById('fileA').click()" class="border-2 border-dashed border-slate-300 p-4 text-center cursor-pointer hover:bg-blue-50 hover:border-blue-400 transition-all rounded group">
+                        <input type="file" id="fileA" class="hidden">
+                        <p class="ui-label group-hover:text-blue-600">CLIC O ARRASTRAR ARCHIVO A</p>
+                    </div>
+                    
+                    <div class="bg-slate-900 p-3 rounded">
+                        <p class="text-[9px] text-slate-500 font-bold mb-1">HASH SHA-256 A:</p>
+                        <div id="hashA" class="mono text-[10px] text-blue-400 break-all leading-tight">ESPERANDO...</div>
+                    </div>
                 </div>
             </div>
 
-            <div class="lab-panel p-5 bg-slate-900 flex flex-col justify-center">
-                <label class="ui-label text-slate-500 mb-2 uppercase">Hash SHA-256 Detectado</label>
-                <div id="hashHex" class="mono text-[11px] md:text-[13px] text-blue-400 break-all leading-relaxed bg-black/40 p-3 rounded border border-slate-800 shadow-inner">
-                    INICIALIZANDO...
+            <div class="lab-panel border-l-4 border-l-emerald-600 p-5 flex flex-col gap-4">
+                <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+                    <div class="flex flex-col">
+                        <span class="ui-label text-emerald-600">FUENTE B</span>
+                        <span id="nameB" class="mono text-xs text-slate-800 font-bold truncate w-32 md:w-48">---</span>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="playSequence('B')" class="bg-emerald-50 text-emerald-700 hover:bg-emerald-100 text-[10px] px-3 py-1 font-bold rounded border border-emerald-200">PLAY B</button>
+                        <button onclick="exportAudio('B')" class="bg-emerald-600 text-white hover:bg-emerald-700 text-[10px] px-3 py-1 font-bold rounded shadow">EXP. AUDIO</button>
+                        <button onclick="exportLaneImage('B')" class="bg-slate-700 text-white hover:bg-slate-800 text-[10px] px-3 py-1 font-bold rounded shadow border border-slate-600" title="Exportar Ficha B">EXP. IMG</button>
+                    </div>
+                </div>
+                
+                <div class="space-y-3">
+                    <input type="text" id="textB" class="w-full border-2 border-slate-200 p-2 text-sm mono outline-none focus:border-emerald-500 rounded bg-slate-50 focus:bg-white transition-all" placeholder="Escribir datos B...">
+                    
+                    <div id="dropB" onclick="document.getElementById('fileB').click()" class="border-2 border-dashed border-slate-300 p-4 text-center cursor-pointer hover:bg-emerald-50 hover:border-emerald-400 transition-all rounded group">
+                        <input type="file" id="fileB" class="hidden">
+                        <p class="ui-label group-hover:text-emerald-600">CLIC O ARRASTRAR ARCHIVO B</p>
+                    </div>
+                    
+                    <div class="bg-slate-900 p-3 rounded">
+                        <p class="text-[9px] text-slate-500 font-bold mb-1">HASH SHA-256 B:</p>
+                        <div id="hashB" class="mono text-[10px] text-emerald-400 break-all leading-tight">ESPERANDO...</div>
+                    </div>
                 </div>
             </div>
         </footer>
@@ -106,143 +180,352 @@
     <canvas id="exportCanvas" style="display:none;"></canvas>
 
     <script>
-        const textInput = document.getElementById('textInput');
-        const fileInput = document.getElementById('fileInput');
-        const dropZone = document.getElementById('drop-zone');
+        // --- CONFIGURACIÓN E INICIALIZACIÓN ---
         const visualizer = document.getElementById('visualizer');
-        const hashHex = document.getElementById('hashHex');
-        const peakCanvas = document.getElementById('peakCanvas');
         const playhead = document.getElementById('playhead');
+        const peakCanvas = document.getElementById('peakCanvas');
+        const pCtx = peakCanvas.getContext('2d');
         const recordStatus = document.getElementById('recordStatus');
-        const fileNameDisplay = document.getElementById('fileNameDisplay');
-        const dropLabel = document.getElementById('dropLabel');
 
-        let audioCtx, currentHash = "";
+        let dataA = { hash: "", name: "VACÍO" };
+        let dataB = { hash: "", name: "VACÍO" };
+        let audioCtx;
+        
+        // Frecuencias: Escala Cromática de 4 octavas mapeada a 0-15 HEX
+        const frequencies = [
+            261.63, 277.18, 293.66, 311.13, 329.63, 349.23, 369.99, 392.00, // C4 a G4
+            415.30, 440.00, 466.16, 493.88, 523.25, 554.37, 587.33, 622.25  // G#4 a D#5
+        ];
 
-        async function getSHA256(data) {
-            const buffer = typeof data === 'string' ? new TextEncoder().encode(data) : data;
-            const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
-            return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+        // --- MOTOR DE AUDIO ---
+        function initAudio() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            return audioCtx;
         }
 
-        async function playAndRecord(hash, isExport = false) {
-            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            if (audioCtx.state === 'suspended') await audioCtx.resume();
+        function createOscillatorNode(freq, time, duration, type, gainValue, destination) {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            
+            osc.type = type; 
+            osc.frequency.setValueAtTime(freq, time);
+            
+            // Envolvente ADSR simple
+            gain.gain.setValueAtTime(0, time);
+            gain.gain.linearRampToValueAtTime(gainValue, time + 0.02); // Attack
+            gain.gain.exponentialRampToValueAtTime(0.001, time + duration); // Decay
+            
+            osc.connect(gain);
+            gain.connect(destination);
+            
+            osc.start(time);
+            osc.stop(time + duration);
+        }
 
-            const dest = audioCtx.createMediaStreamDestination();
-            const recorder = isExport ? new MediaRecorder(dest.stream) : null;
-            const chunks = [];
+        function playTone(freq, type, vol) {
+             const ctx = initAudio();
+             const osc = ctx.createOscillator();
+             const gain = ctx.createGain();
+             osc.type = type;
+             osc.frequency.setValueAtTime(freq, ctx.currentTime);
+             gain.gain.setValueAtTime(vol, ctx.currentTime);
+             gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+             osc.connect(gain); gain.connect(ctx.destination);
+             osc.start(); osc.stop(ctx.currentTime + 0.15);
+        }
+
+        async function playSequence(lane, isExport = false) {
+            const ctx = initAudio();
+            if (ctx.state === 'suspended') await ctx.resume();
+
+            if(isExport) playTone(880, 'sine', 0.1); // Sonido de inicio grabación
+
+            const hash = lane === 'A' ? dataA.hash : dataB.hash;
+            if(!hash) return;
+
+            const dest = ctx.createMediaStreamDestination();
+            let recorder = null;
+            let chunks = [];
 
             if (isExport) {
+                recorder = new MediaRecorder(dest.stream);
                 recorder.ondataavailable = e => chunks.push(e.data);
                 recorder.onstop = () => {
                     const blob = new Blob(chunks, { type: 'audio/webm' });
-                    const url = URL.createObjectURL(blob);
                     const a = document.createElement('a');
-                    a.href = url; a.download = `HASH_AUDIO.webm`; a.click();
+                    a.href = URL.createObjectURL(blob);
+                    a.download = `GENOME_AUDIO_${lane}.webm`; a.click();
                     recordStatus.classList.add('hidden');
                 };
                 recorder.start();
                 recordStatus.classList.remove('hidden');
             }
 
-            const duration = 0.12;
-            const frequencies = [261, 293, 329, 349, 392, 440, 493, 523, 587, 659, 698, 783, 880, 987, 1046, 1174];
-            const bands = document.querySelectorAll('.dna-band');
+            const step = 0.12; // Velocidad
+            const bands = document.querySelectorAll(`.band-${lane.toLowerCase()}`);
             playhead.style.display = 'block';
 
             hash.split('').forEach((char, i) => {
-                const val = parseInt(char, 16);
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-
-                osc.frequency.setValueAtTime(frequencies[val], audioCtx.currentTime + (i * duration));
-                gain.gain.setValueAtTime(0.06, audioCtx.currentTime + (i * duration));
-                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + (i * duration) + duration);
-
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                if (isExport) gain.connect(dest);
-
-                osc.start(audioCtx.currentTime + (i * duration));
-                osc.stop(audioCtx.currentTime + (i * duration) + duration);
-
+                const startTime = ctx.currentTime + (i * step);
+                const freq = frequencies[parseInt(char, 16)];
+                
+                // Conectar a parlantes y/o grabadora
+                const output = isExport ? dest : ctx.destination;
+                
+                // A: Triangle (Brillante), B: Sine (Suave)
+                const waveType = lane === 'A' ? 'triangle' : 'sine';
+                createOscillatorNode(freq, startTime, step, waveType, 0.1, output);
+                
+                // Sincronización Visual
                 setTimeout(() => {
                     playhead.style.left = `${(i * 1.5) + 2}%`;
                     if(bands[i]) bands[i].classList.add('playing');
-                    setTimeout(() => { if(bands[i]) bands[i].classList.remove('playing'); }, duration * 1000);
-                    if (i === hash.length - 1 && isExport) setTimeout(() => recorder.stop(), 500);
-                }, i * duration * 1000);
+                    setTimeout(() => bands[i]?.classList.remove('playing'), step * 1000);
+                    
+                    if(i === 63) {
+                         if(isExport) setTimeout(() => recorder.stop(), 500);
+                         setTimeout(() => playhead.style.display = 'none', 200);
+                    }
+                }, i * step * 1000);
             });
         }
 
-        async function update(data, name = "TEXTO MANUAL") {
-            currentHash = await getSHA256(data || "INIT_SEED");
-            hashHex.innerText = currentHash.toUpperCase();
-            fileNameDisplay.innerText = `FUENTE: ${name}`;
+        function exportAudio(lane) {
+            playSequence(lane, true);
+        }
+
+        async function playDualSync() {
+            const ctx = initAudio();
+            if (ctx.state === 'suspended') await ctx.resume();
             
-            // Peak Canvas
+            playTone(440, 'square', 0.05); // Sonido Start Sync
+
+            const step = 0.15; // Un poco más lento para apreciar la armonía
+            const bandsA = document.querySelectorAll('.band-a');
+            const bandsB = document.querySelectorAll('.band-b');
+            playhead.style.display = 'block';
+
+            for(let i=0; i<64; i++) {
+                const startTime = ctx.currentTime + (i * step);
+                
+                // Disparar A
+                if(dataA.hash[i]) {
+                    const freqA = frequencies[parseInt(dataA.hash[i], 16)];
+                    createOscillatorNode(freqA, startTime, step, 'triangle', 0.08, ctx.destination);
+                }
+                
+                // Disparar B
+                if(dataB.hash[i]) {
+                    const freqB = frequencies[parseInt(dataB.hash[i], 16)];
+                    createOscillatorNode(freqB, startTime, step, 'sine', 0.08, ctx.destination);
+                }
+
+                // Visuales
+                setTimeout(() => {
+                    playhead.style.left = `${(i * 1.5) + 2}%`;
+                    if(bandsA[i]) bandsA[i].classList.add('playing');
+                    if(bandsB[i]) bandsB[i].classList.add('playing');
+                    
+                    setTimeout(() => {
+                        bandsA[i]?.classList.remove('playing');
+                        bandsB[i]?.classList.remove('playing');
+                    }, step * 1000);
+
+                    if(i === 63) setTimeout(() => playhead.style.display = 'none', 200);
+                }, i * step * 1000);
+            }
+        }
+
+        // --- MOTOR CRIPTOGRÁFICO ---
+        async function getSHA256(data) {
+            const buffer = typeof data === 'string' ? new TextEncoder().encode(data) : data;
+            const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
+            return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        async function updateLane(lane, inputData, fileName) {
+            playTone(1200, 'sine', 0.02); // Sonido de carga
+            const hash = await getSHA256(inputData);
+            
+            if(lane === 'A') {
+                dataA = { hash, name: fileName };
+                document.getElementById('nameA').innerText = fileName;
+                document.getElementById('hashA').innerText = hash.toUpperCase();
+            } else {
+                dataB = { hash, name: fileName };
+                document.getElementById('nameB').innerText = fileName;
+                document.getElementById('hashB').innerText = hash.toUpperCase();
+            }
+            render();
+        }
+
+        // --- RENDERIZADO VISUAL ---
+        function render() {
+            visualizer.innerHTML = '<div id="playhead"></div><div class="lane-divider"></div>';
+            
+            // 1. Dibujar Bandas
+            [dataA, dataB].forEach((d, idx) => {
+                if(!d.hash) return;
+                const laneClass = idx === 0 ? 'band-a' : 'band-b';
+                
+                d.hash.split('').forEach((c, i) => {
+                    const val = parseInt(c, 16);
+                    const bar = document.createElement('div');
+                    bar.className = `dna-band absolute w-[1.2%] ${laneClass}`;
+                    bar.style.left = `${(i * 1.5) + 2}%`;
+                    // Offset vertical para separar carriles
+                    const yOffset = idx === 0 ? 0 : 50;
+                    bar.style.top = `${yOffset + (val / 15) * 40}%`;
+                    bar.style.height = `${8 + (val % 8)}px`;
+                    bar.style.opacity = 0.6 + (val/30);
+                    visualizer.appendChild(bar);
+                });
+            });
+
+            // 2. Dibujar Picos (Cromatograma)
             const w = peakCanvas.width = peakCanvas.offsetWidth;
             const h = peakCanvas.height = peakCanvas.offsetHeight;
-            const pCtx = peakCanvas.getContext('2d');
-            pCtx.clearRect(0,0,w,h); 
-            pCtx.beginPath(); 
-            pCtx.strokeStyle = '#2563eb'; 
-            pCtx.lineWidth = 2;
-            currentHash.split('').forEach((c,i) => pCtx.lineTo((i/64)*w, h-((parseInt(c,16)+1)/16)*h));
-            pCtx.stroke();
+            pCtx.clearRect(0,0,w,h);
+            
+            // Línea A
+            if(dataA.hash) {
+                pCtx.beginPath(); pCtx.strokeStyle = 'rgba(37, 99, 235, 0.8)'; pCtx.lineWidth = 2;
+                dataA.hash.split('').forEach((c,i) => pCtx.lineTo((i/64)*w, h-((parseInt(c,16)+1)/16)*h));
+                pCtx.stroke();
+            }
+            // Línea B
+            if(dataB.hash) {
+                pCtx.beginPath(); pCtx.strokeStyle = 'rgba(5, 150, 105, 0.8)'; pCtx.lineWidth = 2;
+                dataB.hash.split('').forEach((c,i) => pCtx.lineTo((i/64)*w, h-((parseInt(c,16)+1)/16)*h));
+                pCtx.stroke();
+            }
 
-            // Gel Visualizer
-            visualizer.innerHTML = '<div id="playhead"></div>';
-            currentHash.split('').forEach((c,i) => {
-                const val = parseInt(c, 16);
-                const bar = document.createElement('div');
-                bar.className = 'dna-band absolute';
-                bar.style.width = '1.2%';
-                bar.style.left = `${(i * 1.5) + 2}%`;
-                bar.style.top = `${(val / 15) * 85}%`;
-                bar.style.height = `${6 + (val % 8)}px`;
-                bar.style.opacity = 0.5 + (val / 30);
-                visualizer.appendChild(bar);
-            });
+            // 3. Similitud
+            if(dataA.hash && dataB.hash) {
+                let matches = 0;
+                for(let i=0; i<64; i++) if(dataA.hash[i] === dataB.hash[i]) matches++;
+                const pct = ((matches/64)*100).toFixed(1);
+                const color = pct == 100 ? 'text-green-600' : 'text-slate-500';
+                document.getElementById('similarity').className = `mono font-bold text-xs ${color}`;
+                document.getElementById('similarity').innerText = `SIMILITUD GENÉTICA: ${pct}% ${pct==100 ? 'MATCH' : ''}`;
+            }
         }
 
-        // Listeners
-        textInput.addEventListener('input', (e) => {
-            update(e.target.value, "TEXTO MANUAL");
-            dropLabel.innerText = "ARRASTRA O CARGA UN ARCHIVO";
-        });
-
-        dropZone.onclick = () => fileInput.click();
-        fileInput.onchange = async (e) => { 
-            if(e.target.files[0]) {
-                const file = e.target.files[0];
-                const buf = await file.arrayBuffer();
-                dropLabel.innerText = `ARCHIVO: ${file.name}`;
-                update(buf, file.name);
-            }
-        };
-
-        document.getElementById('btnListen').onclick = () => playAndRecord(currentHash, false);
-        document.getElementById('btnDownloadAudio').onclick = () => playAndRecord(currentHash, true);
-        document.getElementById('btnDownload').onclick = () => {
+        // --- EXPORTACIÓN IMAGEN INDIVIDUAL ---
+        function exportLaneImage(lane) {
+            playTone(700, 'triangle', 0.1); // Sonido Shutter corto
             const canvas = document.getElementById('exportCanvas');
             const ctx = canvas.getContext('2d');
-            canvas.width = 1200; canvas.height = 800;
-            ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,canvas.width,canvas.height);
-            ctx.fillStyle = '#0f172a'; ctx.fillRect(0,0,canvas.width,80);
-            ctx.fillStyle = '#ffffff'; ctx.font = '24px Arial'; ctx.fillText('REPORTE SECUENCIADOR HASH-256', 40, 50);
-            ctx.font = '14px Courier New'; ctx.fillText(fileNameDisplay.innerText, 40, 120);
+            const data = lane === 'A' ? dataA : dataB;
             
-            currentHash.split('').forEach((c,i) => {
-                const val = parseInt(c, 16);
-                ctx.fillStyle = '#1e293b';
-                ctx.fillRect(50+(i*17), 180+(val/15)*500, 14, 8);
+            // Colores
+            const primaryColor = lane === 'A' ? '#1e40af' : '#059669';
+            const lightBg = lane === 'A' ? '#eff6ff' : '#ecfdf5';
+
+            canvas.width = 1200; 
+            canvas.height = 600; // Altura más compacta para una sola pista
+            
+            // Fondo
+            ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,canvas.width,canvas.height);
+            
+            // Encabezado
+            ctx.fillStyle = lightBg; ctx.fillRect(0,0,canvas.width,140);
+            ctx.strokeStyle = primaryColor; ctx.lineWidth = 5; 
+            ctx.strokeRect(0,0,canvas.width,canvas.height); // Borde general
+
+            // Texto Header
+            ctx.fillStyle = primaryColor; ctx.font = 'bold 30px Arial'; 
+            ctx.fillText(`FICHA TÉCNICA - FUENTE ${lane}`, 50, 60);
+            
+            // Datos
+            ctx.fillStyle = '#334155'; ctx.font = 'bold 20px Courier New';
+            ctx.fillText(`ARCHIVO: ${data.name}`, 50, 100);
+            
+            ctx.font = '16px Courier New';
+            ctx.fillStyle = '#64748b';
+            ctx.fillText(`HASH: ${data.hash}`, 50, 125);
+            
+            // Visualización Gráfica
+            ctx.fillStyle = '#f8fafc'; ctx.fillRect(50, 180, 1100, 380); // Caja de gel
+            
+            // Dibujar Bandas
+            ctx.fillStyle = primaryColor;
+            if(data.hash) data.hash.split('').forEach((c,i) => {
+                const v = parseInt(c,16);
+                // Mapear 0-15 a la altura de la caja (180 a 560)
+                const yPos = 200 + (v/15) * 340;
+                ctx.fillRect(70+(i*16.5), yPos, 14, 10);
             });
-            const a = document.createElement('a'); a.download = 'reporte_genetico.png'; a.href = canvas.toDataURL(); a.click();
+
+            // Descargar
+            const link = document.createElement('a');
+            link.download = `FICHA_FUENTE_${lane}.png`; 
+            link.href = canvas.toDataURL(); 
+            link.click();
+        }
+
+        // --- EXPORTACIÓN PNG COMPLETO ---
+        document.getElementById('btnDownload').onclick = () => {
+            playTone(600, 'triangle', 0.1); // Sonido Shutter
+            const canvas = document.getElementById('exportCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 1200; canvas.height = 1200; // Cuadrado alto para reporte completo
+            
+            // Fondo
+            ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,canvas.width,canvas.height);
+            // Header
+            ctx.fillStyle = '#0f172a'; ctx.fillRect(0,0,canvas.width,120);
+            ctx.fillStyle = '#ffffff'; ctx.font = 'bold 30px Arial'; 
+            ctx.fillText('REPORTE FORENSE CRYPTO-HASH LAB', 50, 70);
+            
+            // Datos
+            ctx.fillStyle = '#334155'; ctx.font = '20px Courier New';
+            ctx.fillText(`FUENTE A: ${dataA.name}`, 50, 180);
+            ctx.fillText(`HASH A: ${dataA.hash}`, 50, 210);
+            ctx.fillText(`FUENTE B: ${dataB.name}`, 50, 260);
+            ctx.fillText(`HASH B: ${dataB.hash}`, 50, 290);
+            
+            // Gráfico Simulado
+            ctx.fillStyle = '#f1f5f9'; ctx.fillRect(50, 350, 1100, 800);
+            ctx.fillStyle = '#cbd5e1'; ctx.fillRect(50, 750, 1100, 5); // Divisor
+            
+            // Render A
+            ctx.fillStyle = '#1e40af';
+            if(dataA.hash) dataA.hash.split('').forEach((c,i) => {
+                const v = parseInt(c,16);
+                ctx.fillRect(70+(i*16.5), 370+(v/15)*350, 14, 10);
+            });
+            
+            // Render B
+            ctx.fillStyle = '#059669';
+            if(dataB.hash) dataB.hash.split('').forEach((c,i) => {
+                const v = parseInt(c,16);
+                ctx.fillRect(70+(i*16.5), 770+(v/15)*350, 14, 10);
+            });
+
+            const link = document.createElement('a');
+            link.download = 'REPORTE_FORENSE_LAB.png'; link.href = canvas.toDataURL(); link.click();
         };
 
-        window.onload = () => update("SEC-001", "SISTEMA_INIT");
+        // --- EVENT LISTENERS ---
+        // Lane A
+        document.getElementById('textA').oninput = e => updateLane('A', e.target.value, "INPUT_MANUAL_A");
+        document.getElementById('dropA').onclick = () => document.getElementById('fileA').click();
+        document.getElementById('fileA').onchange = async e => { 
+            if(e.target.files[0]) updateLane('A', await e.target.files[0].arrayBuffer(), e.target.files[0].name.toUpperCase()); 
+        };
+        // Lane B
+        document.getElementById('textB').oninput = e => updateLane('B', e.target.value, "INPUT_MANUAL_B");
+        document.getElementById('dropB').onclick = () => document.getElementById('fileB').click();
+        document.getElementById('fileB').onchange = async e => { 
+            if(e.target.files[0]) updateLane('B', await e.target.files[0].arrayBuffer(), e.target.files[0].name.toUpperCase()); 
+        };
+
+        // Init
+        window.onload = () => {
+            updateLane('A', "MUESTRA_BASE", "SISTEMA_INIT_A");
+            updateLane('B', "MUESTRA_COMP", "SISTEMA_INIT_B");
+        };
     </script>
 </body>
 </html>
