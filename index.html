@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crypto-Hash Lab v13</title>
+    <title>Crypto-Hash Lab v14</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { background-color: #f8fafc; font-family: 'Inter', sans-serif; }
@@ -59,6 +59,18 @@
             transition: transform 0.1s;
         }
         .btn-sync:active { transform: scale(0.98); }
+
+        /* Estilo para el nombre del archivo visible */
+        .file-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
     </style>
 </head>
 <body class="p-2 md:p-8 min-h-screen flex items-center justify-center bg-slate-100">
@@ -103,8 +115,14 @@
             
             <div class="p-4 md:p-6 bg-slate-50">
                 <div class="flex justify-between mb-1 px-2">
-                    <span class="ui-label text-blue-600">CARRIL A (PRIMARIO)</span>
-                    <span class="ui-label text-emerald-600">CARRIL B (SECUNDARIO)</span>
+                    <div class="flex items-center gap-2">
+                         <span class="ui-label text-blue-600">CARRIL A (PRIMARIO)</span>
+                         <span id="labelA" class="text-[9px] font-mono text-slate-400 opacity-0 transition-opacity duration-300"></span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span id="labelB" class="text-[9px] font-mono text-slate-400 opacity-0 transition-opacity duration-300"></span>
+                        <span class="ui-label text-emerald-600">CARRIL B (SECUNDARIO)</span>
+                    </div>
                 </div>
                 <div id="visualizer" class="gel-simulation w-full overflow-hidden rounded">
                     <div id="playhead"></div>
@@ -121,9 +139,12 @@
             
             <div class="lab-panel border-l-4 border-l-blue-600 p-5 flex flex-col gap-4">
                 <div class="flex justify-between items-center border-b border-slate-100 pb-2">
-                    <div class="flex flex-col">
+                    <div class="flex flex-col gap-1">
                         <span class="ui-label text-blue-600">FUENTE A</span>
-                        <span id="nameA" class="mono text-xs text-slate-800 font-bold truncate w-32 md:w-48">---</span>
+                        <div class="file-badge bg-blue-50 text-blue-800 border-blue-200">
+                            <span class="opacity-50 mr-1">FILE:</span>
+                            <span id="nameA" class="truncate max-w-[120px] md:max-w-[180px]">---</span>
+                        </div>
                     </div>
                     <div class="flex gap-2">
                         <button onclick="playSequence('A')" class="bg-blue-50 text-blue-700 hover:bg-blue-100 text-[10px] px-3 py-1 font-bold rounded border border-blue-200">PLAY A</button>
@@ -149,9 +170,12 @@
 
             <div class="lab-panel border-l-4 border-l-emerald-600 p-5 flex flex-col gap-4">
                 <div class="flex justify-between items-center border-b border-slate-100 pb-2">
-                    <div class="flex flex-col">
+                    <div class="flex flex-col gap-1">
                         <span class="ui-label text-emerald-600">FUENTE B</span>
-                        <span id="nameB" class="mono text-xs text-slate-800 font-bold truncate w-32 md:w-48">---</span>
+                        <div class="file-badge bg-emerald-50 text-emerald-800 border-emerald-200">
+                            <span class="opacity-50 mr-1">FILE:</span>
+                            <span id="nameB" class="truncate max-w-[120px] md:max-w-[180px]">---</span>
+                        </div>
                     </div>
                     <div class="flex gap-2">
                         <button onclick="playSequence('B')" class="bg-emerald-50 text-emerald-700 hover:bg-emerald-100 text-[10px] px-3 py-1 font-bold rounded border border-emerald-200">PLAY B</button>
@@ -350,10 +374,14 @@
             if(lane === 'A') {
                 dataA = { hash, name: fileName };
                 document.getElementById('nameA').innerText = fileName;
+                document.getElementById('labelA').innerText = `[${fileName}]`;
+                document.getElementById('labelA').style.opacity = '1';
                 document.getElementById('hashA').innerText = hash.toUpperCase();
             } else {
                 dataB = { hash, name: fileName };
                 document.getElementById('nameB').innerText = fileName;
+                document.getElementById('labelB').innerText = `[${fileName}]`;
+                document.getElementById('labelB').style.opacity = '1';
                 document.getElementById('hashB').innerText = hash.toUpperCase();
             }
             render();
