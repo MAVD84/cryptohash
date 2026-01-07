@@ -2,199 +2,230 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crypto-Hash Lab v14</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Crypto-Hash Lab Mobile</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #f8fafc; font-family: 'Inter', sans-serif; }
+        body { 
+            background-color: #f1f5f9; 
+            font-family: 'Inter', sans-serif; 
+            -webkit-tap-highlight-color: transparent;
+        }
         
         /* Paneles */
-        .lab-panel { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
+        .lab-panel { 
+            background: #ffffff; 
+            border: 1px solid #e2e8f0; 
+            border-radius: 8px; 
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); 
+        }
         
         /* Gel de Simulación */
         .gel-simulation { 
-            background: linear-gradient(180deg, #f1f5f9 0%, #e2e8f0 100%); 
+            background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%); 
             border: 2px solid #cbd5e1; 
             position: relative; 
-            min-height: 400px; 
+            /* Altura dinámica responsive */
+            min-height: 280px; 
             box-shadow: inset 0 2px 15px rgba(0,0,0,0.05);
-            border-radius: 4px;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        
+        @media (min-width: 768px) {
+            .gel-simulation { min-height: 450px; }
         }
 
         /* Bandas de ADN */
         .dna-band { 
-            border-bottom: 1px solid rgba(255,255,255,0.3); 
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+            border-bottom: 1px solid rgba(255,255,255,0.4); 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1); 
             transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
             border-radius: 1px;
         }
         
         /* Estilos de Carril */
-        .band-a { background: #2563eb; } /* Azul Real */
-        .band-b { background: #059669; } /* Esmeralda */
+        .band-a { background: #3b82f6; } /* Azul más vibrante para móvil */
+        .band-b { background: #10b981; } /* Esmeralda más vibrante */
 
         /* Efectos de Reproducción */
         .band-a.playing { 
-            background: #60a5fa; transform: scaleX(2.5) scaleY(1.2); 
-            box-shadow: 0 0 20px rgba(96, 165, 250, 0.8); z-index: 50; 
+            background: #93c5fd; transform: scaleX(2.0) scaleY(1.5); 
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.8); z-index: 50; 
         }
         .band-b.playing { 
-            background: #34d399; transform: scaleX(2.5) scaleY(1.2); 
-            box-shadow: 0 0 20px rgba(52, 211, 153, 0.8); z-index: 50; 
+            background: #6ee7b7; transform: scaleX(2.0) scaleY(1.5); 
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.8); z-index: 50; 
         }
 
         /* Tipografía Técnica */
-        .mono { font-family: 'JetBrains Mono', 'Fira Code', monospace; }
-        .ui-label { font-size: 0.65rem; font-weight: 800; color: #64748b; letter-spacing: 0.1em; text-transform: uppercase; }
+        .mono { font-family: 'Courier New', Courier, monospace; letter-spacing: -0.5px; }
+        .ui-label { font-size: 0.60rem; font-weight: 900; color: #64748b; letter-spacing: 0.05em; text-transform: uppercase; }
 
         /* Elementos UI */
-        .lane-divider { border-top: 2px dashed #94a3b8; width: 100%; position: absolute; top: 50%; z-index: 5; opacity: 0.5; }
+        .lane-divider { border-top: 2px dashed #94a3b8; width: 100%; position: absolute; top: 50%; z-index: 5; opacity: 0.4; }
         #playhead { 
-            position: absolute; top: 0; width: 2px; height: 100%; 
+            position: absolute; top: 0; width: 3px; height: 100%; 
             background: #ef4444; display: none; z-index: 40; 
             box-shadow: 0 0 10px #ef4444;
         }
-        .btn-sync { 
-            background: linear-gradient(135deg, #1e3a8a 0%, #064e3b 100%); 
-            transition: transform 0.1s;
+        
+        /* Botones Mejorados para Touch */
+        .btn-touch {
+            transition: transform 0.1s, opacity 0.2s;
+            touch-action: manipulation;
         }
-        .btn-sync:active { transform: scale(0.98); }
+        .btn-touch:active { transform: scale(0.96); opacity: 0.9; }
 
-        /* Estilo para el nombre del archivo visible */
+        .btn-sync { 
+            background: linear-gradient(135deg, #0f172a 0%, #334155 100%); 
+        }
+
+        /* Badge de nombre de archivo responsive */
         .file-badge {
-            display: inline-flex;
+            display: flex;
             align-items: center;
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
-            font-size: 0.75rem;
+            padding: 0.3rem 0.5rem;
+            border-radius: 6px;
+            font-size: 0.7rem;
             font-weight: 700;
-            font-family: 'JetBrains Mono', monospace;
-            border: 1px solid rgba(0,0,0,0.1);
+            font-family: monospace;
+            border: 1px solid rgba(0,0,0,0.05);
+            width: 100%;
+            overflow: hidden;
         }
     </style>
 </head>
-<body class="p-2 md:p-8 min-h-screen flex items-center justify-center bg-slate-100">
+<body class="p-3 md:p-8 min-h-screen bg-slate-100 pb-20 md:pb-8">
 
-    <div class="w-full max-w-7xl flex flex-col gap-5">
+    <div class="w-full max-w-7xl mx-auto flex flex-col gap-4 md:gap-6">
         
-        <header class="lab-panel p-5 flex flex-col md:flex-row justify-between items-center gap-4 border-t-4 border-t-slate-900 bg-white">
-            <div class="flex items-center gap-4">
-                <div class="h-10 w-10 bg-slate-900 rounded flex items-center justify-center text-white font-bold mono">IO</div>
-                <div>
-                    <h1 class="text-2xl font-black text-slate-900 tracking-tighter italic leading-none">
+        <header class="lab-panel p-4 flex flex-col md:flex-row justify-between items-center gap-4 bg-white border-t-4 border-t-slate-800">
+            <div class="flex items-center gap-3 w-full md:w-auto justify-center md:justify-start">
+                <div class="h-10 w-10 bg-slate-800 rounded-lg flex items-center justify-center text-white font-bold mono shadow-lg">IO</div>
+                <div class="text-center md:text-left">
+                    <h1 class="text-xl md:text-2xl font-black text-slate-800 tracking-tighter italic leading-none">
                         CRYPTO-HASH <span class="text-blue-600">LAB</span>
                     </h1>
-                    <p class="ui-label mt-1">Secuenciador Criptográfico de Hash-256</p>
+                    <p class="ui-label mt-0.5">Mobile Sequencer v14</p>
                 </div>
             </div>
             
-            <div class="flex flex-wrap justify-center gap-3">
-                <button onclick="playDualSync()" class="btn-sync text-white text-[10px] font-bold px-6 py-3 rounded shadow-lg flex items-center gap-2 hover:opacity-90 ring-1 ring-slate-900">
+            <div class="flex flex-col sm:flex-row w-full md:w-auto gap-2">
+                <button onclick="playDualSync()" class="btn-touch btn-sync text-white text-xs font-bold px-4 py-3 rounded-lg shadow flex justify-center items-center gap-2 w-full sm:w-auto">
                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4l12 6-12 6z"/></svg>
-                    REPRODUCCIÓN DUAL (SYNC)
+                    SYNC PLAY
                 </button>
-                <button id="btnDownload" class="bg-slate-800 text-white text-[10px] font-bold px-5 py-3 rounded hover:bg-slate-700 flex items-center gap-2 shadow-md">
+                <button id="btnDownload" class="btn-touch bg-white border border-slate-300 text-slate-700 text-xs font-bold px-4 py-3 rounded-lg hover:bg-slate-50 flex justify-center items-center gap-2 w-full sm:w-auto shadow-sm">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                    REPORTE PNG
+                    REPORTE
                 </button>
             </div>
         </header>
 
-        <section class="lab-panel p-1 shadow-xl overflow-hidden">
-            <div class="bg-slate-50 p-3 border-b border-slate-100 flex justify-between items-center">
-                <div id="similarity" class="mono font-bold text-xs text-slate-400">ESPERANDO DATOS...</div>
-                <div id="recordStatus" class="text-[10px] text-red-600 font-bold hidden animate-pulse flex items-center gap-2">
-                    <span class="h-2 w-2 bg-red-600 rounded-full"></span> GRABANDO MASTER AUDIO...
+        <section class="lab-panel p-1 shadow-lg overflow-hidden">
+            <div class="bg-slate-50 p-3 border-b border-slate-100 flex flex-col md:flex-row justify-between items-center gap-2">
+                <div id="similarity" class="mono font-bold text-xs text-slate-400 text-center w-full md:w-auto">ESPERANDO DATOS...</div>
+                <div id="recordStatus" class="text-[10px] text-red-600 font-bold hidden animate-pulse flex items-center gap-2 bg-red-50 px-2 py-1 rounded-full border border-red-100">
+                    <span class="h-2 w-2 bg-red-600 rounded-full"></span> GRABANDO
                 </div>
             </div>
 
-            <div class="relative h-24 w-full bg-white border-b border-slate-200">
+            <div class="relative h-20 w-full bg-white border-b border-slate-200">
                 <canvas id="peakCanvas" class="w-full h-full"></canvas>
-                <span class="absolute top-1 left-2 ui-label text-slate-300">ESPECTROGRAMA</span>
+                <span class="absolute top-1 left-2 ui-label text-slate-300 bg-white/80 px-1 rounded">ESPECTRO</span>
             </div>
             
-            <div class="p-4 md:p-6 bg-slate-50">
-                <div class="flex justify-between mb-1 px-2">
-                    <div class="flex items-center gap-2">
-                         <span class="ui-label text-blue-600">CARRIL A (PRIMARIO)</span>
-                         <span id="labelA" class="text-[9px] font-mono text-slate-400 opacity-0 transition-opacity duration-300"></span>
+            <div class="p-2 md:p-6 bg-slate-50">
+                <div class="flex justify-between mb-1 px-1">
+                    <div class="flex flex-col">
+                         <span class="ui-label text-blue-600">CARRIL A</span>
+                         <span id="labelA" class="text-[9px] font-mono text-slate-400 opacity-0 transition-opacity truncate max-w-[100px]"></span>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <span id="labelB" class="text-[9px] font-mono text-slate-400 opacity-0 transition-opacity duration-300"></span>
-                        <span class="ui-label text-emerald-600">CARRIL B (SECUNDARIO)</span>
+                    <div class="flex flex-col items-end">
+                        <span class="ui-label text-emerald-600">CARRIL B</span>
+                        <span id="labelB" class="text-[9px] font-mono text-slate-400 opacity-0 transition-opacity truncate max-w-[100px] text-right"></span>
                     </div>
                 </div>
-                <div id="visualizer" class="gel-simulation w-full overflow-hidden rounded">
+                
+                <div id="visualizer" class="gel-simulation w-full rounded-lg">
                     <div id="playhead"></div>
                     <div class="lane-divider"></div>
                 </div>
+                
                 <div class="flex justify-between mt-2 px-2">
-                    <span class="ui-label">0x00 (INICIO)</span>
-                    <span class="ui-label">0xFF (FIN)</span>
+                    <span class="ui-label">0x00</span>
+                    <span class="ui-label">0xFF</span>
                 </div>
             </div>
         </section>
 
-        <footer class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <footer class="grid grid-cols-1 md:grid-cols-2 gap-4">
             
-            <div class="lab-panel border-l-4 border-l-blue-600 p-5 flex flex-col gap-4">
-                <div class="flex justify-between items-center border-b border-slate-100 pb-2">
-                    <div class="flex flex-col gap-1">
-                        <span class="ui-label text-blue-600">FUENTE A</span>
-                        <div class="file-badge bg-blue-50 text-blue-800 border-blue-200">
-                            <span class="opacity-50 mr-1">FILE:</span>
-                            <span id="nameA" class="truncate max-w-[120px] md:max-w-[180px]">---</span>
-                        </div>
+            <div class="lab-panel border-l-4 border-l-blue-500 p-4 flex flex-col gap-3">
+                <div class="flex flex-col gap-3 pb-2 border-b border-slate-100">
+                    <div class="flex justify-between items-center">
+                        <span class="ui-label text-blue-600 text-xs">FUENTE A (PRIMARIA)</span>
+                        <div class="bg-blue-100 text-blue-800 text-[9px] font-bold px-2 py-0.5 rounded">SHA-256</div>
                     </div>
-                    <div class="flex gap-2">
-                        <button onclick="playSequence('A')" class="bg-blue-50 text-blue-700 hover:bg-blue-100 text-[10px] px-3 py-1 font-bold rounded border border-blue-200">PLAY A</button>
-                        <button onclick="exportAudio('A')" class="bg-blue-600 text-white hover:bg-blue-700 text-[10px] px-3 py-1 font-bold rounded shadow">EXP. AUDIO</button>
-                        <button onclick="exportLaneImage('A')" class="bg-slate-700 text-white hover:bg-slate-800 text-[10px] px-3 py-1 font-bold rounded shadow border border-slate-600" title="Exportar Ficha A">EXP. IMG</button>
+                    
+                    <div class="file-badge bg-blue-50 text-blue-900 border-blue-200 shadow-sm">
+                        <span class="opacity-50 mr-2 select-none">FILE:</span>
+                        <span id="nameA" class="truncate flex-1">---</span>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-2">
+                        <button onclick="playSequence('A')" class="btn-touch bg-white text-blue-600 border border-blue-200 hover:bg-blue-50 text-[10px] py-2 font-bold rounded shadow-sm">PLAY</button>
+                        <button onclick="exportAudio('A')" class="btn-touch bg-blue-600 text-white hover:bg-blue-700 text-[10px] py-2 font-bold rounded shadow">AUDIO</button>
+                        <button onclick="exportLaneImage('A')" class="btn-touch bg-slate-700 text-white hover:bg-slate-800 text-[10px] py-2 font-bold rounded shadow" title="Ficha A">IMG</button>
                     </div>
                 </div>
                 
-                <div class="space-y-3">
-                    <input type="text" id="textA" class="w-full border-2 border-slate-200 p-2 text-sm mono outline-none focus:border-blue-500 rounded bg-slate-50 focus:bg-white transition-all" placeholder="Escribir datos A...">
+                <div class="space-y-3 pt-1">
+                    <input type="text" id="textA" class="w-full border border-slate-300 p-3 text-sm mono outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 rounded-lg bg-white transition-all shadow-inner" placeholder="Escribir datos A...">
                     
-                    <div id="dropA" onclick="document.getElementById('fileA').click()" class="border-2 border-dashed border-slate-300 p-4 text-center cursor-pointer hover:bg-blue-50 hover:border-blue-400 transition-all rounded group">
+                    <div id="dropA" onclick="document.getElementById('fileA').click()" class="border-2 border-dashed border-slate-300 p-3 text-center cursor-pointer active:bg-blue-50 active:border-blue-400 transition-all rounded-lg group">
                         <input type="file" id="fileA" class="hidden">
-                        <p class="ui-label group-hover:text-blue-600">CLIC O ARRASTRAR ARCHIVO A</p>
+                        <p class="ui-label group-hover:text-blue-600">TOCAR PARA SUBIR ARCHIVO</p>
                     </div>
                     
-                    <div class="bg-slate-900 p-3 rounded">
-                        <p class="text-[9px] text-slate-500 font-bold mb-1">HASH SHA-256 A:</p>
-                        <div id="hashA" class="mono text-[10px] text-blue-400 break-all leading-tight">ESPERANDO...</div>
+                    <div class="bg-slate-900 p-3 rounded-lg shadow-inner">
+                        <p class="text-[9px] text-slate-500 font-bold mb-1">HASH OUTPUT:</p>
+                        <div id="hashA" class="mono text-[10px] text-blue-400 break-all leading-tight">...</div>
                     </div>
                 </div>
             </div>
 
-            <div class="lab-panel border-l-4 border-l-emerald-600 p-5 flex flex-col gap-4">
-                <div class="flex justify-between items-center border-b border-slate-100 pb-2">
-                    <div class="flex flex-col gap-1">
-                        <span class="ui-label text-emerald-600">FUENTE B</span>
-                        <div class="file-badge bg-emerald-50 text-emerald-800 border-emerald-200">
-                            <span class="opacity-50 mr-1">FILE:</span>
-                            <span id="nameB" class="truncate max-w-[120px] md:max-w-[180px]">---</span>
-                        </div>
+            <div class="lab-panel border-l-4 border-l-emerald-500 p-4 flex flex-col gap-3">
+                <div class="flex flex-col gap-3 pb-2 border-b border-slate-100">
+                    <div class="flex justify-between items-center">
+                        <span class="ui-label text-emerald-600 text-xs">FUENTE B (SECUNDARIA)</span>
+                        <div class="bg-emerald-100 text-emerald-800 text-[9px] font-bold px-2 py-0.5 rounded">SHA-256</div>
                     </div>
-                    <div class="flex gap-2">
-                        <button onclick="playSequence('B')" class="bg-emerald-50 text-emerald-700 hover:bg-emerald-100 text-[10px] px-3 py-1 font-bold rounded border border-emerald-200">PLAY B</button>
-                        <button onclick="exportAudio('B')" class="bg-emerald-600 text-white hover:bg-emerald-700 text-[10px] px-3 py-1 font-bold rounded shadow">EXP. AUDIO</button>
-                        <button onclick="exportLaneImage('B')" class="bg-slate-700 text-white hover:bg-slate-800 text-[10px] px-3 py-1 font-bold rounded shadow border border-slate-600" title="Exportar Ficha B">EXP. IMG</button>
+                    
+                    <div class="file-badge bg-emerald-50 text-emerald-900 border-emerald-200 shadow-sm">
+                        <span class="opacity-50 mr-2 select-none">FILE:</span>
+                        <span id="nameB" class="truncate flex-1">---</span>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-2">
+                        <button onclick="playSequence('B')" class="btn-touch bg-white text-emerald-600 border border-emerald-200 hover:bg-emerald-50 text-[10px] py-2 font-bold rounded shadow-sm">PLAY</button>
+                        <button onclick="exportAudio('B')" class="btn-touch bg-emerald-600 text-white hover:bg-emerald-700 text-[10px] py-2 font-bold rounded shadow">AUDIO</button>
+                        <button onclick="exportLaneImage('B')" class="btn-touch bg-slate-700 text-white hover:bg-slate-800 text-[10px] py-2 font-bold rounded shadow" title="Ficha B">IMG</button>
                     </div>
                 </div>
                 
-                <div class="space-y-3">
-                    <input type="text" id="textB" class="w-full border-2 border-slate-200 p-2 text-sm mono outline-none focus:border-emerald-500 rounded bg-slate-50 focus:bg-white transition-all" placeholder="Escribir datos B...">
+                <div class="space-y-3 pt-1">
+                    <input type="text" id="textB" class="w-full border border-slate-300 p-3 text-sm mono outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 rounded-lg bg-white transition-all shadow-inner" placeholder="Escribir datos B...">
                     
-                    <div id="dropB" onclick="document.getElementById('fileB').click()" class="border-2 border-dashed border-slate-300 p-4 text-center cursor-pointer hover:bg-emerald-50 hover:border-emerald-400 transition-all rounded group">
+                    <div id="dropB" onclick="document.getElementById('fileB').click()" class="border-2 border-dashed border-slate-300 p-3 text-center cursor-pointer active:bg-emerald-50 active:border-emerald-400 transition-all rounded-lg group">
                         <input type="file" id="fileB" class="hidden">
-                        <p class="ui-label group-hover:text-emerald-600">CLIC O ARRASTRAR ARCHIVO B</p>
+                        <p class="ui-label group-hover:text-emerald-600">TOCAR PARA SUBIR ARCHIVO</p>
                     </div>
                     
-                    <div class="bg-slate-900 p-3 rounded">
-                        <p class="text-[9px] text-slate-500 font-bold mb-1">HASH SHA-256 B:</p>
-                        <div id="hashB" class="mono text-[10px] text-emerald-400 break-all leading-tight">ESPERANDO...</div>
+                    <div class="bg-slate-900 p-3 rounded-lg shadow-inner">
+                        <p class="text-[9px] text-slate-500 font-bold mb-1">HASH OUTPUT:</p>
+                        <div id="hashB" class="mono text-[10px] text-emerald-400 break-all leading-tight">...</div>
                     </div>
                 </div>
             </div>
@@ -215,13 +246,22 @@
         let dataB = { hash: "", name: "VACÍO" };
         let audioCtx;
         
-        // Frecuencias: Escala Cromática de 4 octavas mapeada a 0-15 HEX
+        // Frecuencias
         const frequencies = [
-            261.63, 277.18, 293.66, 311.13, 329.63, 349.23, 369.99, 392.00, // C4 a G4
-            415.30, 440.00, 466.16, 493.88, 523.25, 554.37, 587.33, 622.25  // G#4 a D#5
+            261.63, 277.18, 293.66, 311.13, 329.63, 349.23, 369.99, 392.00,
+            415.30, 440.00, 466.16, 493.88, 523.25, 554.37, 587.33, 622.25
         ];
 
-        // --- MOTOR DE AUDIO ---
+        // --- MANEJO DE REDIMENSIONAMIENTO (RESPONSIVE) ---
+        // Vital para que los canvas no se vean borrosos al girar el móvil
+        function resizeCanvas() {
+            peakCanvas.width = peakCanvas.offsetWidth;
+            peakCanvas.height = peakCanvas.offsetHeight;
+            render();
+        }
+        window.addEventListener('resize', resizeCanvas);
+
+        // --- AUDIO ENGINE ---
         function initAudio() {
             if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             return audioCtx;
@@ -230,20 +270,13 @@
         function createOscillatorNode(freq, time, duration, type, gainValue, destination) {
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
-            
             osc.type = type; 
             osc.frequency.setValueAtTime(freq, time);
-            
-            // Envolvente ADSR simple
             gain.gain.setValueAtTime(0, time);
-            gain.gain.linearRampToValueAtTime(gainValue, time + 0.02); // Attack
-            gain.gain.exponentialRampToValueAtTime(0.001, time + duration); // Decay
-            
-            osc.connect(gain);
-            gain.connect(destination);
-            
-            osc.start(time);
-            osc.stop(time + duration);
+            gain.gain.linearRampToValueAtTime(gainValue, time + 0.02);
+            gain.gain.exponentialRampToValueAtTime(0.001, time + duration);
+            osc.connect(gain); gain.connect(destination);
+            osc.start(time); osc.stop(time + duration);
         }
 
         function playTone(freq, type, vol) {
@@ -262,7 +295,7 @@
             const ctx = initAudio();
             if (ctx.state === 'suspended') await ctx.resume();
 
-            if(isExport) playTone(880, 'sine', 0.1); // Sonido de inicio grabación
+            if(isExport) playTone(880, 'sine', 0.1);
 
             const hash = lane === 'A' ? dataA.hash : dataB.hash;
             if(!hash) return;
@@ -278,34 +311,28 @@
                     const blob = new Blob(chunks, { type: 'audio/webm' });
                     const a = document.createElement('a');
                     a.href = URL.createObjectURL(blob);
-                    a.download = `GENOME_AUDIO_${lane}.webm`; a.click();
+                    a.download = `GENOME_${lane}_MOBILE.webm`; a.click();
                     recordStatus.classList.add('hidden');
                 };
                 recorder.start();
                 recordStatus.classList.remove('hidden');
             }
 
-            const step = 0.12; // Velocidad
+            const step = 0.12; 
             const bands = document.querySelectorAll(`.band-${lane.toLowerCase()}`);
             playhead.style.display = 'block';
 
             hash.split('').forEach((char, i) => {
                 const startTime = ctx.currentTime + (i * step);
                 const freq = frequencies[parseInt(char, 16)];
-                
-                // Conectar a parlantes y/o grabadora
                 const output = isExport ? dest : ctx.destination;
-                
-                // A: Triangle (Brillante), B: Sine (Suave)
                 const waveType = lane === 'A' ? 'triangle' : 'sine';
                 createOscillatorNode(freq, startTime, step, waveType, 0.1, output);
                 
-                // Sincronización Visual
                 setTimeout(() => {
                     playhead.style.left = `${(i * 1.5) + 2}%`;
                     if(bands[i]) bands[i].classList.add('playing');
                     setTimeout(() => bands[i]?.classList.remove('playing'), step * 1000);
-                    
                     if(i === 63) {
                          if(isExport) setTimeout(() => recorder.stop(), 500);
                          setTimeout(() => playhead.style.display = 'none', 200);
@@ -314,53 +341,43 @@
             });
         }
 
-        function exportAudio(lane) {
-            playSequence(lane, true);
-        }
+        function exportAudio(lane) { playSequence(lane, true); }
 
         async function playDualSync() {
             const ctx = initAudio();
             if (ctx.state === 'suspended') await ctx.resume();
-            
-            playTone(440, 'square', 0.05); // Sonido Start Sync
+            playTone(440, 'square', 0.05);
 
-            const step = 0.15; // Un poco más lento para apreciar la armonía
+            const step = 0.15;
             const bandsA = document.querySelectorAll('.band-a');
             const bandsB = document.querySelectorAll('.band-b');
             playhead.style.display = 'block';
 
             for(let i=0; i<64; i++) {
                 const startTime = ctx.currentTime + (i * step);
-                
-                // Disparar A
                 if(dataA.hash[i]) {
                     const freqA = frequencies[parseInt(dataA.hash[i], 16)];
                     createOscillatorNode(freqA, startTime, step, 'triangle', 0.08, ctx.destination);
                 }
-                
-                // Disparar B
                 if(dataB.hash[i]) {
                     const freqB = frequencies[parseInt(dataB.hash[i], 16)];
                     createOscillatorNode(freqB, startTime, step, 'sine', 0.08, ctx.destination);
                 }
 
-                // Visuales
                 setTimeout(() => {
                     playhead.style.left = `${(i * 1.5) + 2}%`;
                     if(bandsA[i]) bandsA[i].classList.add('playing');
                     if(bandsB[i]) bandsB[i].classList.add('playing');
-                    
                     setTimeout(() => {
                         bandsA[i]?.classList.remove('playing');
                         bandsB[i]?.classList.remove('playing');
                     }, step * 1000);
-
                     if(i === 63) setTimeout(() => playhead.style.display = 'none', 200);
                 }, i * step * 1000);
             }
         }
 
-        // --- MOTOR CRIPTOGRÁFICO ---
+        // --- CRIPTOGRAFÍA ---
         async function getSHA256(data) {
             const buffer = typeof data === 'string' ? new TextEncoder().encode(data) : data;
             const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
@@ -368,19 +385,22 @@
         }
 
         async function updateLane(lane, inputData, fileName) {
-            playTone(1200, 'sine', 0.02); // Sonido de carga
+            playTone(1200, 'sine', 0.02);
             const hash = await getSHA256(inputData);
             
+            // Lógica para mostrar nombre (Truncado si es necesario)
+            const displayLabel = `[${fileName}]`;
+
             if(lane === 'A') {
                 dataA = { hash, name: fileName };
                 document.getElementById('nameA').innerText = fileName;
-                document.getElementById('labelA').innerText = `[${fileName}]`;
+                document.getElementById('labelA').innerText = displayLabel;
                 document.getElementById('labelA').style.opacity = '1';
                 document.getElementById('hashA').innerText = hash.toUpperCase();
             } else {
                 dataB = { hash, name: fileName };
                 document.getElementById('nameB').innerText = fileName;
-                document.getElementById('labelB').innerText = `[${fileName}]`;
+                document.getElementById('labelB').innerText = displayLabel;
                 document.getElementById('labelB').style.opacity = '1';
                 document.getElementById('hashB').innerText = hash.toUpperCase();
             }
@@ -391,7 +411,6 @@
         function render() {
             visualizer.innerHTML = '<div id="playhead"></div><div class="lane-divider"></div>';
             
-            // 1. Dibujar Bandas
             [dataA, dataB].forEach((d, idx) => {
                 if(!d.hash) return;
                 const laneClass = idx === 0 ? 'band-a' : 'band-b';
@@ -401,158 +420,128 @@
                     const bar = document.createElement('div');
                     bar.className = `dna-band absolute w-[1.2%] ${laneClass}`;
                     bar.style.left = `${(i * 1.5) + 2}%`;
-                    // Offset vertical para separar carriles
                     const yOffset = idx === 0 ? 0 : 50;
                     bar.style.top = `${yOffset + (val / 15) * 40}%`;
+                    // Ajuste de altura para móvil
                     bar.style.height = `${8 + (val % 8)}px`;
                     bar.style.opacity = 0.6 + (val/30);
                     visualizer.appendChild(bar);
                 });
             });
 
-            // 2. Dibujar Picos (Cromatograma)
+            // Dibujar Picos
             const w = peakCanvas.width = peakCanvas.offsetWidth;
             const h = peakCanvas.height = peakCanvas.offsetHeight;
             pCtx.clearRect(0,0,w,h);
             
-            // Línea A
             if(dataA.hash) {
-                pCtx.beginPath(); pCtx.strokeStyle = 'rgba(37, 99, 235, 0.8)'; pCtx.lineWidth = 2;
+                pCtx.beginPath(); pCtx.strokeStyle = 'rgba(59, 130, 246, 0.8)'; pCtx.lineWidth = 2;
                 dataA.hash.split('').forEach((c,i) => pCtx.lineTo((i/64)*w, h-((parseInt(c,16)+1)/16)*h));
                 pCtx.stroke();
             }
-            // Línea B
             if(dataB.hash) {
-                pCtx.beginPath(); pCtx.strokeStyle = 'rgba(5, 150, 105, 0.8)'; pCtx.lineWidth = 2;
+                pCtx.beginPath(); pCtx.strokeStyle = 'rgba(16, 185, 129, 0.8)'; pCtx.lineWidth = 2;
                 dataB.hash.split('').forEach((c,i) => pCtx.lineTo((i/64)*w, h-((parseInt(c,16)+1)/16)*h));
                 pCtx.stroke();
             }
 
-            // 3. Similitud
             if(dataA.hash && dataB.hash) {
                 let matches = 0;
                 for(let i=0; i<64; i++) if(dataA.hash[i] === dataB.hash[i]) matches++;
                 const pct = ((matches/64)*100).toFixed(1);
                 const color = pct == 100 ? 'text-green-600' : 'text-slate-500';
-                document.getElementById('similarity').className = `mono font-bold text-xs ${color}`;
-                document.getElementById('similarity').innerText = `SIMILITUD GENÉTICA: ${pct}% ${pct==100 ? 'MATCH' : ''}`;
+                document.getElementById('similarity').className = `mono font-bold text-xs ${color} w-full text-center md:text-left`;
+                document.getElementById('similarity').innerText = `SIMILITUD: ${pct}% ${pct==100 ? 'MATCH' : ''}`;
             }
         }
 
-        // --- EXPORTACIÓN IMAGEN INDIVIDUAL ---
+        // --- EXPORT IMAGEN INDIVIDUAL ---
         function exportLaneImage(lane) {
-            playTone(700, 'triangle', 0.1); // Sonido Shutter corto
+            playTone(700, 'triangle', 0.1);
             const canvas = document.getElementById('exportCanvas');
             const ctx = canvas.getContext('2d');
             const data = lane === 'A' ? dataA : dataB;
-            
-            // Colores
             const primaryColor = lane === 'A' ? '#1e40af' : '#059669';
             const lightBg = lane === 'A' ? '#eff6ff' : '#ecfdf5';
 
-            canvas.width = 1200; 
-            canvas.height = 600; // Altura más compacta para una sola pista
+            canvas.width = 800; canvas.height = 600; // Ajustado para formato vertical/móvil
             
-            // Fondo
             ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,canvas.width,canvas.height);
-            
-            // Encabezado
             ctx.fillStyle = lightBg; ctx.fillRect(0,0,canvas.width,140);
             ctx.strokeStyle = primaryColor; ctx.lineWidth = 5; 
-            ctx.strokeRect(0,0,canvas.width,canvas.height); // Borde general
+            ctx.strokeRect(0,0,canvas.width,canvas.height);
 
-            // Texto Header
-            ctx.fillStyle = primaryColor; ctx.font = 'bold 30px Arial'; 
-            ctx.fillText(`FICHA TÉCNICA - FUENTE ${lane}`, 50, 60);
+            ctx.fillStyle = primaryColor; ctx.font = 'bold 24px Arial'; 
+            ctx.fillText(`FICHA FUENTE ${lane}`, 40, 50);
             
-            // Datos
-            ctx.fillStyle = '#334155'; ctx.font = 'bold 20px Courier New';
-            ctx.fillText(`ARCHIVO: ${data.name}`, 50, 100);
+            ctx.fillStyle = '#334155'; ctx.font = 'bold 18px Courier New';
+            ctx.fillText(`FILE: ${data.name.substring(0,30)}...`, 40, 90);
             
-            ctx.font = '16px Courier New';
+            ctx.font = '14px Courier New';
             ctx.fillStyle = '#64748b';
-            ctx.fillText(`HASH: ${data.hash}`, 50, 125);
+            ctx.fillText(`HASH: ${data.hash.substring(0,40)}...`, 40, 115);
             
-            // Visualización Gráfica
-            ctx.fillStyle = '#f8fafc'; ctx.fillRect(50, 180, 1100, 380); // Caja de gel
+            ctx.fillStyle = '#f8fafc'; ctx.fillRect(40, 160, 720, 400);
             
-            // Dibujar Bandas
             ctx.fillStyle = primaryColor;
             if(data.hash) data.hash.split('').forEach((c,i) => {
                 const v = parseInt(c,16);
-                // Mapear 0-15 a la altura de la caja (180 a 560)
-                const yPos = 200 + (v/15) * 340;
-                ctx.fillRect(70+(i*16.5), yPos, 14, 10);
+                const yPos = 180 + (v/15) * 360;
+                ctx.fillRect(50+(i*11), yPos, 8, 8);
             });
 
-            // Descargar
             const link = document.createElement('a');
-            link.download = `FICHA_FUENTE_${lane}.png`; 
-            link.href = canvas.toDataURL(); 
-            link.click();
+            link.download = `FICHA_${lane}_MOBILE.png`; 
+            link.href = canvas.toDataURL(); link.click();
         }
 
-        // --- EXPORTACIÓN PNG COMPLETO ---
+        // --- EXPORT GLOBAL ---
         document.getElementById('btnDownload').onclick = () => {
-            playTone(600, 'triangle', 0.1); // Sonido Shutter
+            playTone(600, 'triangle', 0.1);
             const canvas = document.getElementById('exportCanvas');
             const ctx = canvas.getContext('2d');
-            canvas.width = 1200; canvas.height = 1200; // Cuadrado alto para reporte completo
+            canvas.width = 1000; canvas.height = 1200; 
             
-            // Fondo
             ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,canvas.width,canvas.height);
-            // Header
             ctx.fillStyle = '#0f172a'; ctx.fillRect(0,0,canvas.width,120);
             ctx.fillStyle = '#ffffff'; ctx.font = 'bold 30px Arial'; 
-            ctx.fillText('REPORTE FORENSE CRYPTO-HASH LAB', 50, 70);
+            ctx.fillText('CRYPTO-HASH LAB REPORT', 50, 70);
             
-            // Datos
-            ctx.fillStyle = '#334155'; ctx.font = '20px Courier New';
-            ctx.fillText(`FUENTE A: ${dataA.name}`, 50, 180);
-            ctx.fillText(`HASH A: ${dataA.hash}`, 50, 210);
-            ctx.fillText(`FUENTE B: ${dataB.name}`, 50, 260);
-            ctx.fillText(`HASH B: ${dataB.hash}`, 50, 290);
+            ctx.fillStyle = '#334155'; ctx.font = '18px Courier New';
+            ctx.fillText(`A: ${dataA.name.substring(0,40)}`, 50, 180);
+            ctx.fillText(`B: ${dataB.name.substring(0,40)}`, 50, 240);
             
-            // Gráfico Simulado
-            ctx.fillStyle = '#f1f5f9'; ctx.fillRect(50, 350, 1100, 800);
-            ctx.fillStyle = '#cbd5e1'; ctx.fillRect(50, 750, 1100, 5); // Divisor
+            ctx.fillStyle = '#f1f5f9'; ctx.fillRect(50, 300, 900, 800);
+            ctx.fillStyle = '#cbd5e1'; ctx.fillRect(50, 700, 900, 5);
             
-            // Render A
             ctx.fillStyle = '#1e40af';
             if(dataA.hash) dataA.hash.split('').forEach((c,i) => {
                 const v = parseInt(c,16);
-                ctx.fillRect(70+(i*16.5), 370+(v/15)*350, 14, 10);
+                ctx.fillRect(65+(i*14), 320+(v/15)*350, 10, 8);
             });
             
-            // Render B
             ctx.fillStyle = '#059669';
             if(dataB.hash) dataB.hash.split('').forEach((c,i) => {
                 const v = parseInt(c,16);
-                ctx.fillRect(70+(i*16.5), 770+(v/15)*350, 14, 10);
+                ctx.fillRect(65+(i*14), 720+(v/15)*350, 10, 8);
             });
 
             const link = document.createElement('a');
-            link.download = 'REPORTE_FORENSE_LAB.png'; link.href = canvas.toDataURL(); link.click();
+            link.download = 'REPORTE_MOBILE.png'; link.href = canvas.toDataURL(); link.click();
         };
 
-        // --- EVENT LISTENERS ---
-        // Lane A
-        document.getElementById('textA').oninput = e => updateLane('A', e.target.value, "INPUT_MANUAL_A");
+        // --- LISTENERS ---
+        document.getElementById('textA').oninput = e => updateLane('A', e.target.value, "INPUT_A");
         document.getElementById('dropA').onclick = () => document.getElementById('fileA').click();
-        document.getElementById('fileA').onchange = async e => { 
-            if(e.target.files[0]) updateLane('A', await e.target.files[0].arrayBuffer(), e.target.files[0].name.toUpperCase()); 
-        };
-        // Lane B
-        document.getElementById('textB').oninput = e => updateLane('B', e.target.value, "INPUT_MANUAL_B");
+        document.getElementById('fileA').onchange = async e => { if(e.target.files[0]) updateLane('A', await e.target.files[0].arrayBuffer(), e.target.files[0].name.toUpperCase()); };
+        document.getElementById('textB').oninput = e => updateLane('B', e.target.value, "INPUT_B");
         document.getElementById('dropB').onclick = () => document.getElementById('fileB').click();
-        document.getElementById('fileB').onchange = async e => { 
-            if(e.target.files[0]) updateLane('B', await e.target.files[0].arrayBuffer(), e.target.files[0].name.toUpperCase()); 
-        };
+        document.getElementById('fileB').onchange = async e => { if(e.target.files[0]) updateLane('B', await e.target.files[0].arrayBuffer(), e.target.files[0].name.toUpperCase()); };
 
-        // Init
         window.onload = () => {
-            updateLane('A', "MUESTRA_BASE", "SISTEMA_INIT_A");
-            updateLane('B', "MUESTRA_COMP", "SISTEMA_INIT_B");
+            updateLane('A', "MOBILE_INIT", "SYSTEM_READY");
+            updateLane('B', "MOBILE_TEST", "SYSTEM_READY");
+            resizeCanvas(); // Ajuste inicial
         };
     </script>
 </body>
